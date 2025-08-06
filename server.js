@@ -250,6 +250,10 @@ app.get("/api/cooldown-time", async function (req, res) {
     }
 });
 
+app.get("/about", (req, res) => {
+  res.sendFile(path.join(__dirname, "build", "about.html"));
+});
+
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "build", "index.html"));
 });
