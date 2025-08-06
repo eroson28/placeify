@@ -1,5 +1,7 @@
 import { useState } from "react";
 
+const COOLDOWN_PERIOD_MS = process.env.COOLDOWN_PERIOD_MINUTES * 60 * 1000;
+
 function Tile({
   rowNum,
   colNum,
@@ -11,7 +13,7 @@ function Tile({
   spotifyLink,
   onCellClick,
   albumName,
-  onUpdateSuccess 
+  onUpdateSuccess
 }) {
   const [showModal, setShowModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -67,11 +69,21 @@ function Tile({
 
   const handleSelectSong = (song) => {
     setSelectedSong(song);
-    setSearchResults([]); // Clear search results after selection
+    setSearchResults([]);
     setSearchQuery(song.name);
   };
 
   const handleSaveEdit = async () => {
+    const lastUpdate = localStorage.getItem('lastUpdateTimestamp');
+    const now = new Date().getTime();
+
+    if (lastUpdate && (now - lastUpdate < COOLDOWN_PERIOD_MS)) {
+      const timeLeft = (COOLDOWN_PERIOD_MS - (now - lastUpdate)) / 1000;
+      const minutesLeft = Math.ceil(timeLeft / 60);
+      alert(`You must wait approximately ${minutesLeft} more minutes before making another change.`);
+      return;
+    }
+
     if (!selectedSong) {
       alert("Please select a song.");
       return;
@@ -94,11 +106,11 @@ function Tile({
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-      selectedSong: selectedSong,
-      username: newUsername,
-      rowNum: rowNum,
-      colNum: colNum,
-      }),
+          selectedSong: selectedSong,
+          username: newUsername,
+          rowNum: rowNum,
+          colNum: colNum,
+        }),
       });
 
       if (!response.ok) {
@@ -109,9 +121,10 @@ function Tile({
       const result = await response.json();
       console.log("Tile update successful:", result);
 
-      onUpdateSuccess();
+      localStorage.setItem('lastUpdateTimestamp', now.toString());
 
-      handleCloseEditModal(); // Close the edit modal on success
+      onUpdateSuccess();
+      handleCloseEditModal();
     } catch (error) {
       console.error("Error saving tile edit:", error);
       alert(`Error saving tile: ${error.message}`);
@@ -246,71 +259,71 @@ function Tile({
                 gap: "20px",
               }}
             >
-                <div style={{ marginBottom: '15px', width: '100%', maxWidth: '400px', display: 'flexbox', flexDirection: 'row'}}>
-              <input
-                type="text"
-                placeholder="Search Spotify song:"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                style={{ width: 'calc(95% - 70px)', padding: '10px', borderRadius: '5px', border: '1px solid #ccc', marginRight: '5px' }}
-              />
-              <button onClick={handleSearch} disabled={isSearching} style={{ padding: '10px 15px', borderRadius: '5px', border: 'none', backgroundColor: '#1DB954', color: 'white', cursor: 'pointer' }}>
-                {isSearching ? '...' : 'Search'}
-              </button>
-            </div>
+              <div style={{ marginBottom: '15px', width: '100%', maxWidth: '400px', display: 'flexbox', flexDirection: 'row'}}>
+                <input
+                  type="text"
+                  placeholder="Search Spotify song:"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  style={{ width: 'calc(95% - 70px)', padding: '10px', borderRadius: '5px', border: '1px solid #ccc', marginRight: '5px' }}
+                />
+                <button onClick={handleSearch} disabled={isSearching} style={{ padding: '10px 15px', borderRadius: '5px', border: 'none', backgroundColor: '#1DB954', color: 'white', cursor: 'pointer' }}>
+                  {isSearching ? '...' : 'Search'}
+                </button>
+              </div>
 
-            {searchResults.length > 0 && (
-              <div style={{ maxHeight: '200px', overflowY: 'auto', border: '1px solid #eee', borderRadius: '5px', width: '100%', maxWidth: '400px', marginBottom: '15px' }}>
-                {searchResults.map(song => (
-                  <div
-                    key={song.id}
-                    onClick={() => handleSelectSong(song)}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      padding: '10px',
-                      borderBottom: '1px solid #eee',
-                      cursor: 'pointer',
-                      backgroundColor: selectedSong && selectedSong.id === song.id ? '#e6f7ff' : 'white',
-                    }}
-                  >
-                    <img src={song.album.images[2]?.url || 'https://placehold.co/50x50/CCCCCC/333333?text=No+Image'} alt="Album Cover" style={{ width: '50px', height: '50px', marginRight: '10px', borderRadius: '3px' }} />
-                    <div>
-                      <p style={{ margin: 0, fontWeight: 'bold', fontSize: '0.9em' }}>{song.name}</p>
-                      <p style={{ margin: 0, fontSize: '0.8em', color: '#555' }}>{song.artists.map(a => a.name).join(', ')}</p>
+              {searchResults.length > 0 && (
+                <div style={{ maxHeight: '200px', overflowY: 'auto', border: '1px solid #eee', borderRadius: '5px', width: '100%', maxWidth: '400px', marginBottom: '15px' }}>
+                  {searchResults.map(song => (
+                    <div
+                      key={song.id}
+                      onClick={() => handleSelectSong(song)}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        padding: '10px',
+                        borderBottom: '1px solid #eee',
+                        cursor: 'pointer',
+                        backgroundColor: selectedSong && selectedSong.id === song.id ? '#e6f7ff' : 'white',
+                      }}
+                    >
+                      <img src={song.album.images[2]?.url || 'https://placehold.co/50x50/CCCCCC/333333?text=No+Image'} alt="Album Cover" style={{ width: '50px', height: '50px', marginRight: '10px', borderRadius: '3px' }} />
+                      <div>
+                        <p style={{ margin: 0, fontWeight: 'bold', fontSize: '0.9em' }}>{song.name}</p>
+                        <p style={{ margin: 0, fontSize: '0.8em', color: '#555' }}>{song.artists.map(a => a.name).join(', ')}</p>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
+              )}
+
+              {selectedSong && (
+                <div style={{ marginBottom: '15px', padding: '10px', border: '1px dashed #1DB954', borderRadius: '5px', width: '100%', maxWidth: '400px', textAlign: 'center' }}>
+                  <p style={{ margin: '0 0 5px 0', fontWeight: 'bold' }}>Selected: {selectedSong.name}</p>
+                  <p style={{ margin: 0, fontSize: '0.9em', color: '#555' }}>by {selectedSong.artists.map(a => a.name).join(', ')}</p>
+                </div>
+              )}
+
+              <div style={{ marginBottom: '15px', width: '100%', maxWidth: '400px' }}>
+                <label htmlFor="usernameInput" style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>Username (3 - 15 characters):</label>
+                <input
+                  id="usernameInput"
+                  type="text"
+                  placeholder="Enter your username"
+                  value={newUsername}
+                  onChange={(e) => setNewUsername(e.target.value)}
+                  style={{ width: '100%', padding: '10px', borderRadius: '5px', border: '1px solid #ccc' }}
+                />
               </div>
-            )}
 
-            {selectedSong && (
-              <div style={{ marginBottom: '15px', padding: '10px', border: '1px dashed #1DB954', borderRadius: '5px', width: '100%', maxWidth: '400px', textAlign: 'center' }}>
-                <p style={{ margin: '0 0 5px 0', fontWeight: 'bold' }}>Selected: {selectedSong.name}</p>
-                <p style={{ margin: 0, fontSize: '0.9em', color: '#555' }}>by {selectedSong.artists.map(a => a.name).join(', ')}</p>
+              <div style={{ display: 'flex', justifyContent: 'center', gap: '15px', width: '100%', maxWidth: '400px' }}>
+                <button onClick={handleSaveEdit} style={{ padding: '10px 20px', borderRadius: '25px', border: 'none', backgroundColor: '#4CAF50', color: 'white', cursor: 'pointer', flexGrow: 1 }}>
+                  Send
+                </button>
+                <button onClick={handleCloseEditModal} style={{ padding: '10px 20px', borderRadius: '25px', border: 'none', backgroundColor: '#f44336', color: 'white', cursor: 'pointer', flexGrow: 1 }}>
+                  Cancel
+                </button>
               </div>
-            )}
-
-            <div style={{ marginBottom: '15px', width: '100%', maxWidth: '400px' }}>
-              <label htmlFor="usernameInput" style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>Username (3 - 15 characters):</label>
-              <input
-                id="usernameInput"
-                type="text"
-                placeholder="Enter your username"
-                value={newUsername}
-                onChange={(e) => setNewUsername(e.target.value)}
-                style={{ width: '100%', padding: '10px', borderRadius: '5px', border: '1px solid #ccc' }}
-              />
-            </div>
-
-            <div style={{ display: 'flex', justifyContent: 'center', gap: '15px', width: '100%', maxWidth: '400px' }}>
-              <button onClick={handleSaveEdit} style={{ padding: '10px 20px', borderRadius: '25px', border: 'none', backgroundColor: '#4CAF50', color: 'white', cursor: 'pointer', flexGrow: 1 }}>
-                Send
-              </button>
-              <button onClick={handleCloseEditModal} style={{ padding: '10px 20px', borderRadius: '25px', border: 'none', backgroundColor: '#f44336', color: 'white', cursor: 'pointer', flexGrow: 1 }}>
-                Cancel
-              </button>
-            </div>
 
             </div>
           </div>
