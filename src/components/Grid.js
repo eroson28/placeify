@@ -25,9 +25,6 @@ function Grid() {
 
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [cooldownSeconds, setCooldownSeconds] = useState(0);
-  const [globalLastEditTimestamp, setGlobalLastEditTimestamp] = useState(null);
-  const [editCooldownDuration, setEditCooldownDuration] = useState(0);
 
   const fetchGridData = async () => {
     try {
@@ -42,30 +39,21 @@ function Grid() {
         );
       }
 
-      const {
-        tiles: fetchedData,
-        editCooldownSeconds,
-        globalLastEditTimestamp: backendGlobalTimestamp,
-      } = await response.json();
-      setEditCooldownDuration(editCooldownSeconds); // Store total cooldown duration
-      setGlobalLastEditTimestamp(backendGlobalTimestamp); // Store the global last edit timestamp
+      const { tiles: fetchedData } = await response.json();
 
-      // Create a map for quick lookup of fetched tiles by their coordinates
       const fetchedTilesMap = new Map();
       fetchedData.forEach((tile) => {
         fetchedTilesMap.set(`${tile.rowNum}-${tile.colNum}`, tile);
       });
 
-      // Create a new grid array, merging fetched data into the correct positions
       const updatedGrid = [];
       for (let r = 1; r < 21; r++) {
         for (let c = 1; c < 21; c++) {
           const key = `${r}-${c}`;
           const fetchedTile = fetchedTilesMap.get(key);
           if (fetchedTile) {
-            updatedGrid.push(fetchedTile); // Use fetched data if available
+            updatedGrid.push(fetchedTile);
           } else {
-            // Otherwise, use a default blank tile for this position
             updatedGrid.push({
               rowNum: r,
               colNum: c,
@@ -81,7 +69,7 @@ function Grid() {
           }
         }
       }
-      setGridData(updatedGrid); // Update the state with the fully merged grid
+      setGridData(updatedGrid);
     } catch (err) {
       setError(err);
       console.error("Failed to fetch grid data:", err);
@@ -93,33 +81,6 @@ function Grid() {
   useEffect(() => {
     fetchGridData();
   }, []);
-
-  // Timer countdown logic based on globalLastEditTimestamp
-  useEffect(() => {
-    let timerInterval;
-    if (globalLastEditTimestamp && editCooldownDuration > 0) {
-      const lastEditDate = new Date(globalLastEditTimestamp);
-      timerInterval = setInterval(() => {
-        const now = new Date();
-        const elapsedSeconds = (now.getTime() - lastEditDate.getTime()) / 1000;
-        const remaining = Math.max(0, editCooldownDuration - elapsedSeconds);
-        setCooldownSeconds(Math.ceil(remaining)); // Round up to show full seconds remaining
-      }, 1000);
-    } else {
-      setCooldownSeconds(0); // No cooldown if no global updates or duration is 0
-    }
-
-    return () => clearInterval(timerInterval); // Cleanup on unmount or dependency change
-  }, [globalLastEditTimestamp, editCooldownDuration]); // Dependencies are the global timestamp and the total duration
-
-  // Format the time (MM:SS)
-  const formatTime = (totalSeconds) => {
-    const minutes = Math.floor(totalSeconds / 60);
-    const seconds = totalSeconds % 60;
-    return `${minutes.toString().padStart(2, "0")}:${seconds
-      .toString()
-      .padStart(2, "0")}`;
-  };
 
   if (isLoading) {
     return (
@@ -143,19 +104,8 @@ function Grid() {
     );
   }
 
-  // Determine if editing is currently disabled
-  const isEditDisabled = cooldownSeconds > 0;
-
   return (
     <div className="app-container">
-      {" "}
-      {/* Use app-container for overall layout */}
-      <div className="timer-display">
-        Time until next edit: <strong>{formatTime(cooldownSeconds)}</strong>
-        {isEditDisabled && (
-          <span className="cooldown-active-message"> (Editing disabled)</span>
-        )}
-      </div>
       <div
         style={{
           display: "grid",
@@ -183,13 +133,12 @@ function Grid() {
               lastUpdated={cellData.lastUpdated}
               spotifyLink={cellData.link}
               albumName={cellData.albumName}
-              onUpdateSuccess={fetchGridData} // Pass Grid's fetchGridData for updates
+              onUpdateSuccess={fetchGridData}
               onCellClick={() =>
                 console.log(
                   `Cell clicked: (${cellData.rowNum}, ${cellData.colNum})`
                 )
               }
-              isEditDisabled={isEditDisabled} // Pass cooldown status to Tile
             />
           );
         })}
