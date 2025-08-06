@@ -1,7 +1,5 @@
 import { useState } from "react";
 
-const COOLDOWN_PERIOD_MS = process.env.COOLDOWN_PERIOD_MINUTES * 60 * 1000;
-
 function Tile({
   rowNum,
   colNum,
@@ -74,15 +72,7 @@ function Tile({
   };
 
   const handleSaveEdit = async () => {
-    const lastUpdate = localStorage.getItem('lastUpdateTimestamp');
-    const now = new Date().getTime();
-
-    if (lastUpdate && (now - lastUpdate < COOLDOWN_PERIOD_MS)) {
-      const timeLeft = (COOLDOWN_PERIOD_MS - (now - lastUpdate)) / 1000;
-      const minutesLeft = Math.ceil(timeLeft / 60);
-      alert(`You must wait approximately ${minutesLeft} more minutes before making another change.`);
-      return;
-    }
+    // The server will now handle all cooldown logic.
 
     if (!selectedSong) {
       alert("Please select a song.");
@@ -114,14 +104,12 @@ function Tile({
       });
 
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Failed to update tile: ${response.status} - ${errorText}`);
+        const errorData = await response.json();
+        throw new Error(errorData.error || `Failed to update tile: ${response.status}`);
       }
 
       const result = await response.json();
       console.log("Tile update successful:", result);
-
-      localStorage.setItem('lastUpdateTimestamp', now.toString());
 
       onUpdateSuccess();
       handleCloseEditModal();
