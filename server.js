@@ -12,6 +12,19 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded());
 
+const redis = require('redis');
+
+const redisClient = redis.createClient({
+  url: process.env.REDIS_URL
+});
+
+redisClient.on('connect', () => console.log('Connected to Redis!'));
+redisClient.on('error', (err) => console.log('Redis Client Error', err));
+
+(async () => {
+  await redisClient.connect();
+})();
+
 app.locals.globalLastEditTimestamp = null;
 app.get("/api/allTiles", async function (req, res) {
   try {
@@ -169,6 +182,19 @@ app.put("/api/tiles/:rowNum/:colNum", async function (req, res) {
   try {
     const { rowNum, colNum } = req.params;
     const { selectedSong, username: newUsername } = req.body;
+    
+    const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+    const cooldownPeriodMinutes = parseInt(process.env.EDIT_COOLDOWN_MINUTES, 10) || 30;
+    const cooldownPeriodSeconds = cooldownPeriodMinutes * 60;
+    const cooldownKey = `cooldown:${clientIp}`;
+
+    const onCooldown = await redisClient.get(cooldownKey);
+    
+    if (onCooldown) {
+        const timeLeftSeconds = await redisClient.ttl(cooldownKey);
+        const minutesLeft = Math.ceil(timeLeftSeconds / 60);
+        return res.status(429).json({ error: `You must wait approximately ${minutesLeft} more minutes.` });
+    }
 
     if (!selectedSong || !selectedSong.id || !newUsername) {
       return res.status(400).json({ error: "Missing song data or username." });
@@ -179,30 +205,6 @@ app.put("/api/tiles/:rowNum/:colNum", async function (req, res) {
       : null;
     const lastUpdated = new Date().toISOString();
 
-    const editCooldownSeconds = app.locals.editCooldownSeconds;
-    const globalLastEdit = app.locals.globalLastEditTimestamp;
-
-    console.log(
-      `Server /api/tiles PUT: Cooldown check. Global last edit: ${globalLastEdit}, Duration: ${editCooldownSeconds}`
-    );
-
-    if (editCooldownSeconds > 0 && globalLastEdit) {
-      const timeSinceLastGlobalUpdate =
-        (new Date().getTime() - new Date(globalLastEdit).getTime()) / 1000;
-      if (timeSinceLastGlobalUpdate < editCooldownSeconds) {
-        const remainingTime = Math.ceil(
-          editCooldownSeconds - timeSinceLastGlobalUpdate
-        );
-        console.log(
-          `Server /api/tiles PUT: Cooldown active. Remaining: ${remainingTime}s`
-        );
-        return res.status(429).json({
-          error: `Please wait ${remainingTime} seconds before editing another tile.`,
-          cooldownRemaining: remainingTime,
-        });
-      }
-    }
-
     const updateResult = await dbOperation.updateTile({
       "rowNum": rowNum,
       "colNum": colNum,
@@ -210,11 +212,9 @@ app.put("/api/tiles/:rowNum/:colNum", async function (req, res) {
       username: newUsername,
       "lastUpdated": lastUpdated,
     });
-
-    app.locals.globalLastEditTimestamp = new Date().toISOString();
-    console.log(
-      `Server /api/tiles PUT: Global cooldown timestamp updated to: ${app.locals.globalLastEditTimestamp}`
-    );
+    
+    // If the update is successful, set the cooldown key
+    await redisClient.setEx(cooldownKey, cooldownPeriodSeconds, 'on');
 
     res
       .status(200)
