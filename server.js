@@ -183,7 +183,7 @@ app.put("/api/tiles/:rowNum/:colNum", async function (req, res) {
     const { rowNum, colNum } = req.params;
     const { selectedSong, username: newUsername } = req.body;
     
-    const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+    const clientIp = (req.headers['x-forwarded-for'] || req.socket.remoteAddress).split(',')[0].trim();
     const cooldownPeriodMinutes = parseInt(process.env.EDIT_COOLDOWN_MINUTES, 10) || 30;
     const cooldownPeriodSeconds = cooldownPeriodMinutes * 60;
     const cooldownKey = `cooldown:${clientIp}`;
