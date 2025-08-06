@@ -204,11 +204,11 @@ app.put("/api/tiles/:rowNum/:colNum", async function (req, res) {
     }
 
     const updateResult = await dbOperation.updateTile({
-      rowNum: rowNum,
-      colNum: colNum,
+      "rowNum": rowNum,
+      "colNum": colNum,
       link: spotifyLink,
       username: newUsername,
-      lastUpdated,
+      "lastUpdated": lastUpdated,
     });
 
     app.locals.globalLastEditTimestamp = new Date().toISOString();
