@@ -17,15 +17,18 @@
   display: grid;
   grid-template-columns: repeat(20, 1fr);
   padding: 10px;
+
   /* Adjust padding for larger screens (e.g., tablets and desktops) */
   @media (min-width: 768px) {
     padding: 20px 40px;
   }
+
   @media (min-width: 1200px) {
     padding: 30px 80px;
   }
 
-  width: calc(100% - (var(--grid-padding-left) + var(--grid-padding-right))); /* Adjust width based on dynamic padding */
+  width: calc(100% - (var(--grid-padding-left) + var(--grid-padding-right)));
+  /* Adjust width based on dynamic padding */
   max-width: 1000px;
   min-width: 300px;
 }
@@ -34,12 +37,14 @@
   --grid-padding-left: 10px;
   --grid-padding-right: 10px;
 }
+
 @media (min-width: 768px) {
   .grid-container {
     --grid-padding-left: 40px;
     --grid-padding-right: 40px;
   }
 }
+
 @media (min-width: 1200px) {
   .grid-container {
     --grid-padding-left: 80px;
@@ -58,14 +63,17 @@
   position: relative;
   box-sizing: border-box;
 
-  width: 100%; 
+  width: 100%;
   height: 100%;
 }
 
 .tile:hover {
-  transform: scale(2); /* Slight zoom effect on hover */
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* Shadow on hover */
-  z-index: 1; /* Bring hovered tile to front */
+  transform: scale(2);
+  /* Slight zoom effect on hover */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  /* Shadow on hover */
+  z-index: 1;
+  /* Bring hovered tile to front */
 }
 
 .tile-content {
@@ -85,40 +93,53 @@
 .tile-image {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* Ensures image covers the tile without distortion */
+  object-fit: cover;
+  /* Ensures image covers the tile without distortion */
 }
 
 /* MODAL CSS */
 
 .modal {
-  display: none; /* Hidden by default */
-  position: fixed; /* Stay in place */
-  z-index: 1; /* Sit on top */
+  display: none;
+  /* Hidden by default */
+  position: fixed;
+  /* Stay in place */
+  z-index: 1;
+  /* Sit on top */
   left: 0;
   top: 0;
-  width: 100%; /* Full width */
-  height: 100%; /* Full height */
-  overflow: auto; /* Enable scroll if needed */
-  background-color: rgb(0,0,0); /* Fallback color */
-  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+  width: 100%;
+  /* Full width */
+  height: 100%;
+  /* Full height */
+  overflow: auto;
+  /* Enable scroll if needed */
+  background-color: rgb(0, 0, 0);
+  /* Fallback color */
+  background-color: rgba(0, 0, 0, 0.4);
+  /* Black w/ opacity */
   overflow-y: hidden;
 }
 
 /* Modal Content/Box */
 .modal-content-custom {
   background-color: #fefefe;
-  margin: 5% auto; /* 15% from the top and centered */
+  margin: 5% auto;
+  /* 15% from the top and centered */
   padding: 20px;
   border: 1px solid #888;
-  width: 80%; /* Could be more or less, depending on screen size */
+  width: 80%;
+  /* Could be more or less, depending on screen size */
 }
 
 .modal-content-custom img {
-  width: 200px; /* Increased width */
-  height: 200px; /* Increased height */
+  width: 200px;
+  /* Increased width */
+  height: 200px;
+  /* Increased height */
   object-fit: cover;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 /* The Close Button */
