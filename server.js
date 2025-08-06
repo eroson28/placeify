@@ -12,6 +12,9 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// USE BUILD DIRECTORY FOR STATIC FILES
+app.use(express.static(path.join(__dirname, "build")));
+
 const redis = require("redis");
 
 const redisClient = redis.createClient({
@@ -245,14 +248,6 @@ app.get("/api/cooldown-time", async function (req, res) {
         console.error("Error fetching cooldown time:", error);
         res.status(500).json({ error: "Failed to retrieve cooldown time." });
     }
-});
-
-// USE BUILD DIRECTORY FOR STATIC FILES
-app.use(express.static(path.join(__dirname, "build")));
-
-// Explicitly handle the /about route to serve the static HTML file
-app.get("/about", (req, res) => {
-  res.sendFile(path.join(__dirname, "build", "about.html"));
 });
 
 app.get("*", (req, res) => {
