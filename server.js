@@ -9,72 +9,10 @@ const PORT = process.env.PORT || 5000;
 const app = express();
 
 app.use(cors());
-app.use(express.static(path.join(__dirname, "public")));
 app.use(express.json());
 app.use(express.urlencoded());
 
 app.locals.globalLastEditTimestamp = null;
-
-async function initializeServer() {
-  try {
-    const CLIENT_ID = process.env.CLIENT_ID;
-    const CLIENT_SECRET = process.env.CLIENT_SECRET;
-
-    if (!CLIENT_ID || !CLIENT_SECRET) {
-      console.error(
-        "Spotify CLIENT_ID or CLIENT_SECRET not found in environment variables. Please check your .env file."
-      );
-      process.exit(1);
-    }
-
-    const credentials = Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString(
-      "base64"
-    );
-    const tokenResponse = await fetch(
-      "https://accounts.spotify.com/api/token",
-      {
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-          Authorization: `Basic ${credentials}`,
-        },
-        body: "grant_type=client_credentials",
-        method: "POST",
-      }
-    );
-
-    if (!tokenResponse.ok) {
-      const errorText = await tokenResponse.text();
-      throw new Error(
-        `Failed to get Spotify token: ${tokenResponse.status} - ${errorText}`
-      );
-    }
-
-    const tokenData = await tokenResponse.json();
-    const spotifyAccessToken = tokenData.access_token;
-    console.log(
-      "Spotify Access Token obtained:",
-      spotifyAccessToken ? "Yes" : "No"
-    );
-
-    app.locals.spotifyAccessToken = spotifyAccessToken;
-
-    // Read the cooldown duration from .env and convert to seconds
-    const editCooldownMinutes = parseInt(
-      process.env.EDIT_COOLDOWN_MINUTES || "0",
-      10
-    );
-    app.locals.editCooldownSeconds = editCooldownMinutes * 60;
-    console.log(
-      `Server Init: Edit cooldown set to: ${editCooldownMinutes} minutes (${app.locals.editCooldownSeconds} seconds)`
-    );
-
-    app.listen(PORT, () => console.log(`Listening on port ${PORT}`));
-  } catch (error) {
-    console.error("Server initialization failed:", error);
-    process.exit(1);
-  }
-}
-
 app.get("/api/allTiles", async function (req, res) {
   try {
     const spotifyAccessToken = app.locals.spotifyAccessToken;
@@ -278,7 +216,6 @@ app.put("/api/tiles/:rowNum/:colNum", async function (req, res) {
       lastUpdated,
     });
 
-    // After a successful update, reset the global cooldown timestamp
     app.locals.globalLastEditTimestamp = new Date().toISOString();
     console.log(
       `Server /api/tiles PUT: Global cooldown timestamp updated to: ${app.locals.globalLastEditTimestamp}`
@@ -292,9 +229,69 @@ app.put("/api/tiles/:rowNum/:colNum", async function (req, res) {
     res.status(500).json({ error: "Failed to update tile data." });
   }
 });
+app.use(express.static(path.join(__dirname, "build")));
 
-app.get("/about", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "about.html"));
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "build", "index.html"));
 });
+
+async function initializeServer() {
+  try {
+    const CLIENT_ID = process.env.CLIENT_ID;
+    const CLIENT_SECRET = process.env.CLIENT_SECRET;
+
+    if (!CLIENT_ID || !CLIENT_SECRET) {
+      console.error(
+        "Spotify CLIENT_ID or CLIENT_SECRET not found in environment variables. Please check your .env file."
+      );
+      process.exit(1);
+    }
+
+    const credentials = Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString(
+      "base64"
+    );
+    const tokenResponse = await fetch(
+      "https://accounts.spotify.com/api/token",
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          Authorization: `Basic ${credentials}`,
+        },
+        body: "grant_type=client_credentials",
+        method: "POST",
+      }
+    );
+
+    if (!tokenResponse.ok) {
+      const errorText = await tokenResponse.text();
+      throw new Error(
+        `Failed to get Spotify token: ${tokenResponse.status} - ${errorText}`
+      );
+    }
+
+    const tokenData = await tokenResponse.json();
+    const spotifyAccessToken = tokenData.access_token;
+    console.log(
+      "Spotify Access Token obtained:",
+      spotifyAccessToken ? "Yes" : "No"
+    );
+
+    app.locals.spotifyAccessToken = spotifyAccessToken;
+
+    const editCooldownMinutes = parseInt(
+      process.env.EDIT_COOLDOWN_MINUTES || "0",
+      10
+    );
+    app.locals.editCooldownSeconds = editCooldownMinutes * 60;
+    console.log(
+      `Server Init: Edit cooldown set to: ${editCooldownMinutes} minutes (${app.locals.editCooldownSeconds} seconds)`
+    );
+
+    app.listen(PORT, () => console.log(`Listening on port ${PORT}`));
+  } catch (error) {
+    console.error("Server initialization failed:", error);
+    process.exit(1);
+  }
+}
 
 initializeServer();
