@@ -94,9 +94,11 @@ function Tile({
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          selectedSong: selectedSong,
-          username: newUsername,
-        }),
+      selectedSong: selectedSong,
+      username: newUsername,
+      rowNum: rowNum,
+      colNum: colNum,
+      }),
       });
 
       if (!response.ok) {
