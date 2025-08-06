@@ -25,6 +25,7 @@ function Grid() {
 
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [cooldownRemaining, setCooldownRemaining] = useState(0);
 
   const fetchGridData = async () => {
     try {
@@ -82,6 +83,25 @@ function Grid() {
     fetchGridData();
   }, []);
 
+  useEffect(() => {
+    if (cooldownRemaining > 0) {
+      const timer = setInterval(() => {
+        setCooldownRemaining(prevTime => prevTime - 1);
+      }, 1000);
+      return () => clearInterval(timer);
+    }
+  }, [cooldownRemaining]);
+
+  const handleCooldown = (seconds) => {
+    setCooldownRemaining(seconds);
+  };
+
+  const formatTime = (seconds) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${String(minutes).padStart(2, "0")}:${String(remainingSeconds).padStart(2, "0")}`;
+  };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-screen bg-gray-100">
@@ -106,6 +126,11 @@ function Grid() {
 
   return (
     <div className="app-container">
+      {cooldownRemaining > 0 && (
+        <div className="cooldown-timer-display" style={{ textAlign: 'center', margin: '10px 0', fontSize: '1.2em', fontWeight: 'bold', color: '#ff6b6b' }}>
+          Please wait before editing again: {formatTime(cooldownRemaining)}
+        </div>
+      )}
       <div
         style={{
           display: "grid",
@@ -139,6 +164,7 @@ function Grid() {
                   `Cell clicked: (${cellData.rowNum}, ${cellData.colNum})`
                 )
               }
+              onCooldownTriggered={handleCooldown}
             />
           );
         })}
