@@ -1,0 +1,37 @@
+/* FOR ABOUT PAGE */
+body {
+  font-family: "Roboto", Arial, sans-serif;
+  background-color: #f5f3ed
+}
+
+#about-content {
+  padding-left: 10em;
+  padding-right: 10em;
+  padding-top: 3em;
+}
+
+@media only screen and (max-width: 600px) {
+  #about-content {
+    padding-left: 3em;
+    padding-right: 4em;
+    padding-top: 3em;
+    justify-content: right;
+  }
+}
+
+#about-content h1 {
+  text-decoration: underline solid #ebab34;
+}
+
+#about-content h2 {
+  text-decoration: wavy;
+}
+
+#about-content p {
+  font-size: 18px;
+  line-height: 1.6;
+}
+
+#about-content p a {
+  color: #a97b25
+}

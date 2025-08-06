@@ -11,12 +11,43 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
   <link rel="manifest" href="/site.webmanifest">
-  <link rel="stylesheet" href="%PUBLIC_URL%/index.css" />
+  <link rel="stylesheet" href="C:\Users\erolz\Desktop\placeify1\public\about.css" /> <!-- %PUBLIC_URL%/index.css -->
   <title>about placeify</title>
 </head>
 
 <body>
-<p>you made it...</p>
+  <div id="about-content">
+    <div>
+      <h1 style="display:inline; "> Placeify</h1>
+      <h2 style="display:inline; white-space: pre;"> by Erol Sonmez </h2>
+    </div>
+
+    <h2>What is this?</h2>
+    <p>
+      This is a project based on r/place, a recurring social experiment and collaborative medium hosted annually
+      on Reddit. Users can place a single colored tile in a 1000x1000 grid of tiles every minute, emphasizing
+      cooperation to build larger images from the communities on the website.
+    </p>
+    <p> I thought the idea of a project that forces users to collaborate by design was interesting and wanted to
+      recreate it myself with a twist &mdash; using songs instead of colored tiles.
+    <p>
+      The front end for this web app runs on React, and the backend on Node.js using Express. A PostgreSQL database
+      stores the tile's song and user data, while Redis is used to enforce a 30-minute per-user cooldown on tile edits,
+      a value that is adjustable for future changes. This encourages cooperation by requiring users to be deliberate
+      with their changes. The entire application is containerized and deployed on Render.
+    </p>
+    <h2> Where can I find the website? </h2>
+    <p> You can check it out <a href="https://placeify.onrender.com/"> here.</a> The source code is available via the
+      GitHub link on the website, or <a href="https://github.com/eroson28/placeify">at this link</a>. The website is also embedded below if your browser supports iframe elements.</p>
+      <p> Please note that it might take a minute to load as the Render server spins down after short periods of inactivity.</p>
+    <iframe src="https://placeify.onrender.com/" style="border:0; width: 100%; height: 600px;"
+      title="Placeify Application"></iframe>
+    <br>
+    <h2> Thank you for checking out my project! </h2>
+    <p style="padding-bottom: 30px"> Please feel free to reach out to me at erolsonmeznj@gmail.com if you have any
+      questions, suggestions, or feedback. </p>
+  </div>
+  </div>
 </body>
 
 </html>
