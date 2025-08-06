@@ -10,7 +10,7 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
-app.use(express.urlencoded());
+app.use(express.urlencoded({ extended: true }));
 
 const redis = require("redis");
 
@@ -227,6 +227,24 @@ app.put("/api/tiles/:rowNum/:colNum", async function (req, res) {
     console.error("Error updating tile:", error);
     res.status(500).json({ error: "Failed to update tile data." });
   }
+});
+
+app.get("/api/cooldown-time", async function (req, res) {
+    try {
+        const clientIp = (req.headers['x-forwarded-for'] || req.socket.remoteAddress).split(',')[0].trim();
+        const cooldownKey = `cooldown:${clientIp}`;
+
+        const timeLeftSeconds = await redisClient.ttl(cooldownKey);
+
+        // Redis TTL returns -2 if the key doesn't exist, -1 if it exists but has no expiration,
+        // and a positive number for the seconds remaining. We treat -2 as 0.
+        const timeRemaining = timeLeftSeconds > 0 ? timeLeftSeconds : 0;
+
+        res.json({ timeRemaining: timeRemaining });
+    } catch (error) {
+        console.error("Error fetching cooldown time:", error);
+        res.status(500).json({ error: "Failed to retrieve cooldown time." });
+    }
 });
 
 // USE BUILD DIRECTORY FOR STATIC FILES

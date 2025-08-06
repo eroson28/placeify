@@ -11,7 +11,8 @@ function Tile({
   spotifyLink,
   onCellClick,
   albumName,
-  onUpdateSuccess
+  onUpdateSuccess,
+  onCooldownTriggered
 }) {
   const [showModal, setShowModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -105,6 +106,20 @@ function Tile({
 
       if (!response.ok) {
         const errorData = await response.json();
+
+        if (response.status === 429 && errorData.error) {
+          const match = errorData.error.match(/approximately (\d+) more minutes/);
+          const minutesLeft = match ? parseInt(match[1], 10) : 0;
+          if (minutesLeft > 0) {
+            onCooldownTriggered(minutesLeft * 60);
+            const alertModal = document.createElement('div');
+            alertModal.className = 'modal-alert';
+            alertModal.innerHTML = `<p>You must wait approximately ${minutesLeft} more minutes before editing again.</p>`;
+            document.body.appendChild(alertModal);
+            setTimeout(() => document.body.removeChild(alertModal), 5000);
+          }
+          return;
+        }
         throw new Error(errorData.error || `Failed to update tile: ${response.status}`);
       }
 
