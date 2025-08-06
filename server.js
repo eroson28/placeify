@@ -39,11 +39,6 @@ app.get("/api/allTiles", async function (req, res) {
             `Could not extract Spotify track ID from malformed link: ${spotifyLink}`
           );
         }
-      } else {
-        console.warn(
-          `Skipping tile due to missing or invalid 'link' property:`,
-          tile
-        );
       }
     });
 
@@ -209,8 +204,8 @@ app.put("/api/tiles/:rowNum/:colNum", async function (req, res) {
     }
 
     const updateResult = await dbOperation.updateTile({
-      rowNum: parseInt(rowNum),
-      colNum: parseInt(colNum),
+      rowNum: rowNum,
+      colNum: colNum,
       link: spotifyLink,
       username: newUsername,
       lastUpdated,
