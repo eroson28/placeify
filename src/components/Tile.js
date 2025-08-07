@@ -90,6 +90,12 @@ function Tile({
       return;
     }
 
+    const validUsernameRegex = /^[a-zA-Z0-9._+-]+$/;
+    if (!validUsernameRegex.test(newUsername)) {
+      alert("Username can only contain letters, numbers, periods (.), underscores (_), plus signs (+), and hyphens (-).");
+      return;
+    }
+
     try {
       const response = await fetch(`/api/tiles/${rowNum}/${colNum}`, {
         method: 'PUT',
