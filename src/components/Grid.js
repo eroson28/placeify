@@ -155,28 +155,11 @@ function Grid() {
       {cooldownRemaining > 0 && (
         <div
           className="cooldown-timer-display"
-          style={{
-            textAlign: "center",
-            margin: "10px 0",
-            fontSize: "1.2em",
-            fontWeight: "bold",
-            color: "#f1eff8ff",
-          }}
         >
           {formatTime(cooldownRemaining)}
         </div>
       )}
       <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: `repeat(${20}, 1fr)`,
-          gap: "1px",
-          padding: "10px",
-          maxWidth: `${20 * 30 + (20 - 1) * 1 + 20}px`,
-          margin: "20px auto",
-          borderRadius: "8px",
-          boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-        }}
         className="grid-container"
       >
         {gridData.map((cellData) => {
