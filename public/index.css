@@ -161,7 +161,7 @@
 }
 
 /* The Play on Spotify Button */
-.spotify_button {
+.spotify-button {
   display: inline-flex;
   justify-content: center;
   align-items: center;
