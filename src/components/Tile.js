@@ -1,5 +1,4 @@
 import { useState } from "react";
-import SpotifyLogo from './Spotify_Full_Logo_Black_CMYK.svg';
 
 function Tile({
   rowNum,
@@ -237,7 +236,7 @@ function Tile({
                     }}
                   >
                     <img
-                      src={SpotifyLogo}
+                      src={"/Spotify_Full_Logo_Black_CMYK.svg"}
                       alt="Listen on Spotify"
                       style={{ height: "20px" }}
                     />
