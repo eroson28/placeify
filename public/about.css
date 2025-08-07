@@ -4,6 +4,11 @@ body {
   background-color: #f5f3ed
 }
 
+a {
+  color: #000000;
+  text-decoration: none;
+}
+
 #about-content {
   padding-left: 5em;
   padding-right: 5em;
@@ -34,5 +39,6 @@ body {
 }
 
 #about-content p a {
-  color: #a97b25
+  color: #a97b25;
+  text-decoration: underline #a97b25;
 }
