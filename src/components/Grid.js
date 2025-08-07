@@ -179,6 +179,8 @@ function Grid() {
               key={`${cellData.rowNum}-${cellData.colNum}`}
               {...cellData}
               onUpdateAttemptComplete={handleUpdateAttemptComplete}
+              onUpdateSuccess={handleUpdateAttemptComplete}
+              onCooldownTriggered={setCooldownRemaining}
               onCellClick={() =>
                 console.log(
                   `Cell clicked: (${cellData.rowNum}, ${cellData.colNum})`
