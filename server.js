@@ -239,7 +239,7 @@ app.get("/api/cooldown-time", async function (req, res) {
 
         const timeLeftSeconds = await redisClient.ttl(cooldownKey);
 
-        // Redis TTL returns -2 if the key doesn't exist, -1 if it exists but has no expiration,
+        // Redis TTL returns -2 if await redisClient.setEx(cooldownKey, cooldownPeriodSeconds, "on");the key doesn't exist, -1 if it exists but has no expiration,
         // and a positive number for the seconds remaining. Treat -2 as 0.
         const timeRemaining = timeLeftSeconds > 0 ? timeLeftSeconds : 0;
 
