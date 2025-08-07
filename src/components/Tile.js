@@ -1,4 +1,5 @@
 import { useState } from "react";
+import SpotifyLogo from './Spotify_Full_Logo_Black_CMYK.svg';
 
 function Tile({
   rowNum,
@@ -12,7 +13,7 @@ function Tile({
   onCellClick,
   albumName,
   onUpdateSuccess,
-  onCooldownTriggered
+  onCooldownTriggered,
 }) {
   const [showModal, setShowModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -42,7 +43,7 @@ function Tile({
   const handleEditClick = () => {
     handleCloseModal();
     setShowEditModal(true);
-    setSearchQuery('');
+    setSearchQuery("");
     setSearchResults([]);
     setSelectedSong(null);
     setNewUsername(username);
@@ -52,7 +53,9 @@ function Tile({
     if (!searchQuery.trim()) return;
     setIsSearching(true);
     try {
-      const response = await fetch(`/api/spotify-search?query=${encodeURIComponent(searchQuery)}`);
+      const response = await fetch(
+        `/api/spotify-search?query=${encodeURIComponent(searchQuery)}`
+      );
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -92,15 +95,17 @@ function Tile({
 
     const validUsernameRegex = /^[a-zA-Z0-9._+-]+$/;
     if (!validUsernameRegex.test(newUsername)) {
-      alert("Username can only contain letters, numbers, periods (.), underscores (_), plus signs (+), and hyphens (-).");
+      alert(
+        "Username can only contain letters, numbers, periods (.), underscores (_), plus signs (+), and hyphens (-)."
+      );
       return;
     }
 
     try {
       const response = await fetch(`/api/tiles/${rowNum}/${colNum}`, {
-        method: 'PUT',
+        method: "PUT",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           selectedSong: selectedSong,
@@ -114,19 +119,23 @@ function Tile({
         const errorData = await response.json();
 
         if (response.status === 429 && errorData.error) {
-          const match = errorData.error.match(/approximately (\d+) more minutes/);
+          const match = errorData.error.match(
+            /approximately (\d+) more minutes/
+          );
           const minutesLeft = match ? parseInt(match[1], 10) : 0;
           if (minutesLeft > 0) {
             onCooldownTriggered(minutesLeft * 60);
-            const alertModal = document.createElement('div');
-            alertModal.className = 'modal-alert';
+            const alertModal = document.createElement("div");
+            alertModal.className = "modal-alert";
             alertModal.innerHTML = `<p>You must wait approximately ${minutesLeft} more minutes before editing again.</p>`;
             document.body.appendChild(alertModal);
             setTimeout(() => document.body.removeChild(alertModal), 5000);
           }
           return;
         }
-        throw new Error(errorData.error || `Failed to update tile: ${response.status}`);
+        throw new Error(
+          errorData.error || `Failed to update tile: ${response.status}`
+        );
       }
 
       const result = await response.json();
@@ -164,7 +173,10 @@ function Tile({
           style={{ display: showModal ? "block" : "none" }}
           onClick={handleCloseModal}
         >
-          <div className="modal-content-custom" onClick={(e) => e.stopPropagation()}>
+          <div
+            className="modal-content-custom"
+            onClick={(e) => e.stopPropagation()}
+          >
             <span className="close" onClick={handleCloseModal}>
               &times;
             </span>
@@ -212,7 +224,9 @@ function Tile({
                     target="_blank"
                     rel="noopener noreferrer"
                     style={{
-                      display: "inline-block",
+                      display: "inline-flex",
+                      justifyContent: "center",
+                      alignItems: "center",
                       marginTop: "15px",
                       padding: "8px 15px",
                       backgroundColor: "#1DB954",
@@ -222,7 +236,11 @@ function Tile({
                       fontWeight: "bold",
                     }}
                   >
-                    Listen on Spotify
+                    <img
+                      src={SpotifyLogo}
+                      alt="Listen on Spotify"
+                      style={{ height: "20px" }}
+                    />
                   </a>
                 )}
                 <button
@@ -256,7 +274,10 @@ function Tile({
           style={{ display: showEditModal ? "block" : "none" }}
           onClick={handleCloseEditModal}
         >
-          <div className="modal-content-custom" onClick={(e) => e.stopPropagation()}>
+          <div
+            className="modal-content-custom"
+            onClick={(e) => e.stopPropagation()}
+          >
             <span className="close" onClick={handleCloseEditModal}>
               &times;
             </span>
@@ -268,38 +289,104 @@ function Tile({
                 gap: "20px",
               }}
             >
-              <div style={{ marginBottom: '15px', width: '100%', maxWidth: '400px', display: 'flexbox', flexDirection: 'row'}}>
+              <div
+                style={{
+                  marginBottom: "15px",
+                  width: "100%",
+                  maxWidth: "400px",
+                  display: "flexbox",
+                  flexDirection: "row",
+                }}
+              >
                 <input
                   type="text"
                   placeholder="Search Spotify song:"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  style={{ width: 'calc(95% - 70px)', padding: '10px', borderRadius: '5px', border: '1px solid #ccc', marginRight: '5px' }}
+                  style={{
+                    width: "calc(95% - 70px)",
+                    padding: "10px",
+                    borderRadius: "5px",
+                    border: "1px solid #ccc",
+                    marginRight: "5px",
+                  }}
                 />
-                <button onClick={handleSearch} disabled={isSearching} style={{ padding: '10px 15px', borderRadius: '5px', border: 'none', backgroundColor: '#1DB954', color: 'white', cursor: 'pointer' }}>
-                  {isSearching ? '...' : 'Search'}
+                <button
+                  onClick={handleSearch}
+                  disabled={isSearching}
+                  style={{
+                    padding: "10px 15px",
+                    borderRadius: "5px",
+                    border: "none",
+                    backgroundColor: "#1DB954",
+                    color: "white",
+                    cursor: "pointer",
+                  }}
+                >
+                  {isSearching ? "..." : "Search"}
                 </button>
               </div>
 
               {searchResults.length > 0 && (
-                <div style={{ maxHeight: '200px', overflowY: 'auto', border: '1px solid #eee', borderRadius: '5px', width: '100%', maxWidth: '400px', marginBottom: '15px' }}>
-                  {searchResults.map(song => (
+                <div
+                  style={{
+                    maxHeight: "200px",
+                    overflowY: "auto",
+                    border: "1px solid #eee",
+                    borderRadius: "5px",
+                    width: "100%",
+                    maxWidth: "400px",
+                    marginBottom: "15px",
+                  }}
+                >
+                  {searchResults.map((song) => (
                     <div
                       key={song.id}
                       onClick={() => handleSelectSong(song)}
                       style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        padding: '10px',
-                        borderBottom: '1px solid #eee',
-                        cursor: 'pointer',
-                        backgroundColor: selectedSong && selectedSong.id === song.id ? '#e6f7ff' : 'white',
+                        display: "flex",
+                        alignItems: "center",
+                        padding: "10px",
+                        borderBottom: "1px solid #eee",
+                        cursor: "pointer",
+                        backgroundColor:
+                          selectedSong && selectedSong.id === song.id
+                            ? "#e6f7ff"
+                            : "white",
                       }}
                     >
-                      <img src={song.album.images[2]?.url || 'https://placehold.co/50x50/CCCCCC/333333?text=No+Image'} alt="Album Cover" style={{ width: '50px', height: '50px', marginRight: '10px', borderRadius: '3px' }} />
+                      <img
+                        src={
+                          song.album.images[2]?.url ||
+                          "https://placehold.co/50x50/CCCCCC/333333?text=No+Image"
+                        }
+                        alt="Album Cover"
+                        style={{
+                          width: "50px",
+                          height: "50px",
+                          marginRight: "10px",
+                          borderRadius: "3px",
+                        }}
+                      />
                       <div>
-                        <p style={{ margin: 0, fontWeight: 'bold', fontSize: '0.9em' }}>{song.name}</p>
-                        <p style={{ margin: 0, fontSize: '0.8em', color: '#555' }}>{song.artists.map(a => a.name).join(', ')}</p>
+                        <p
+                          style={{
+                            margin: 0,
+                            fontWeight: "bold",
+                            fontSize: "0.9em",
+                          }}
+                        >
+                          {song.name}
+                        </p>
+                        <p
+                          style={{
+                            margin: 0,
+                            fontSize: "0.8em",
+                            color: "#555",
+                          }}
+                        >
+                          {song.artists.map((a) => a.name).join(", ")}
+                        </p>
                       </div>
                     </div>
                   ))}
@@ -307,33 +394,96 @@ function Tile({
               )}
 
               {selectedSong && (
-                <div style={{ marginBottom: '15px', padding: '10px', border: '1px dashed #1DB954', borderRadius: '5px', width: '100%', maxWidth: '400px', textAlign: 'center' }}>
-                  <p style={{ margin: '0 0 5px 0', fontWeight: 'bold' }}>Selected: {selectedSong.name}</p>
-                  <p style={{ margin: 0, fontSize: '0.9em', color: '#555' }}>by {selectedSong.artists.map(a => a.name).join(', ')}</p>
+                <div
+                  style={{
+                    marginBottom: "15px",
+                    padding: "10px",
+                    border: "1px dashed #1DB954",
+                    borderRadius: "5px",
+                    width: "100%",
+                    maxWidth: "400px",
+                    textAlign: "center",
+                  }}
+                >
+                  <p style={{ margin: "0 0 5px 0", fontWeight: "bold" }}>
+                    Selected: {selectedSong.name}
+                  </p>
+                  <p style={{ margin: 0, fontSize: "0.9em", color: "#555" }}>
+                    by {selectedSong.artists.map((a) => a.name).join(", ")}
+                  </p>
                 </div>
               )}
 
-              <div style={{ marginBottom: '15px', width: '100%', maxWidth: '400px' }}>
-                <label htmlFor="usernameInput" style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>Username (3 - 15 characters):</label>
+              <div
+                style={{
+                  marginBottom: "15px",
+                  width: "100%",
+                  maxWidth: "400px",
+                }}
+              >
+                <label
+                  htmlFor="usernameInput"
+                  style={{
+                    display: "block",
+                    marginBottom: "5px",
+                    fontWeight: "bold",
+                  }}
+                >
+                  Username (3 - 15 characters):
+                </label>
                 <input
                   id="usernameInput"
                   type="text"
                   placeholder="Enter your username"
                   value={newUsername}
                   onChange={(e) => setNewUsername(e.target.value)}
-                  style={{ width: '100%', padding: '10px', borderRadius: '5px', border: '1px solid #ccc' }}
+                  style={{
+                    width: "100%",
+                    padding: "10px",
+                    borderRadius: "5px",
+                    border: "1px solid #ccc",
+                  }}
                 />
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'center', gap: '15px', width: '100%', maxWidth: '400px' }}>
-                <button onClick={handleSaveEdit} style={{ padding: '10px 20px', borderRadius: '25px', border: 'none', backgroundColor: '#4CAF50', color: 'white', cursor: 'pointer', flexGrow: 1 }}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  gap: "15px",
+                  width: "100%",
+                  maxWidth: "400px",
+                }}
+              >
+                <button
+                  onClick={handleSaveEdit}
+                  style={{
+                    padding: "10px 20px",
+                    borderRadius: "25px",
+                    border: "none",
+                    backgroundColor: "#4CAF50",
+                    color: "white",
+                    cursor: "pointer",
+                    flexGrow: 1,
+                  }}
+                >
                   Send
                 </button>
-                <button onClick={handleCloseEditModal} style={{ padding: '10px 20px', borderRadius: '25px', border: 'none', backgroundColor: '#f44336', color: 'white', cursor: 'pointer', flexGrow: 1 }}>
+                <button
+                  onClick={handleCloseEditModal}
+                  style={{
+                    padding: "10px 20px",
+                    borderRadius: "25px",
+                    border: "none",
+                    backgroundColor: "#f44336",
+                    color: "white",
+                    cursor: "pointer",
+                    flexGrow: 1,
+                  }}
+                >
                   Cancel
                 </button>
               </div>
-
             </div>
           </div>
         </div>
