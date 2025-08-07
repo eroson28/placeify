@@ -221,44 +221,18 @@ function Tile({
                     rel="noopener noreferrer"
                   >
                     <button
-                      style={{
-                        display: "inline-flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        marginTop: "15px",
-                        padding: "8px 15px",
-                        backgroundColor: "#1DB954",
-                        borderRadius: "25px",
-                      }}
+                      className = "spotify-button"
                     >
                       <img
                         src={"/Spotify_Full_Logo_Black_CMYK.svg"}
                         alt="Listen on Spotify"
-                        style={{
-                          height: "30px",
-                          borderRadius: "0px",
-                          boxShadow: "none",
-                        }}
                       />
                     </button>
                   </a>
                 )}
                 <button
                   onClick={handleEditClick}
-                  style={{
-                    display: "block",
-                    width: "100%",
-                    maxWidth: "150px",
-                    margin: "20px auto 0 auto",
-                    padding: "10px 15px",
-                    backgroundColor: "#457b9d",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "25px",
-                    cursor: "pointer",
-                    fontSize: "1em",
-                    fontWeight: "bold",
-                  }}
+                  className="edit-button"
                 >
                   Edit
                 </button>
