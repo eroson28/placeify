@@ -13,7 +13,6 @@ function Tile({
   albumName,
   onUpdateSuccess,
   onCooldownTriggered,
-  onUpdateAttemptComplete
 }) {
   const [showModal, setShowModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -146,8 +145,6 @@ function Tile({
     } catch (error) {
       console.error("Error saving tile edit:", error);
       alert(`Error saving tile: ${error.message}`);
-    } finally {
-      onUpdateAttemptComplete();
     }
   };
 
