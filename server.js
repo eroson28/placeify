@@ -208,6 +208,13 @@ app.put("/api/tiles/:rowNum/:colNum", async function (req, res) {
       return res.status(400).json({ error: "Missing song data or username." });
     }
 
+    const validUsernameRegex = /^[a-zA-Z0-9._+-]+$/;
+    if (!validUsernameRegex.test(newUsername)) {
+      return res.status(400).json({
+        error: "Username can only contain letters, numbers, periods (.), underscores (_), plus signs (+), and hyphens (-).",
+      });
+    }
+
     const spotifyLink = selectedSong.external_urls
       ? selectedSong.external_urls.spotify
       : null;
