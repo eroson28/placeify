@@ -199,6 +199,7 @@ app.put("/api/tiles/:rowNum/:colNum", async function (req, res) {
       const minutesLeft = Math.ceil(timeLeftSeconds / 60);
       return res.status(429).json({
         error: `You must wait approximately ${minutesLeft} more minutes.`,
+        timeRemaining: timeLeftSeconds,
       });
     }
 

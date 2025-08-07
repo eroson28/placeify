@@ -75,27 +75,29 @@ function Tile({
   };
 
   const handleSaveEdit = async () => {
-    // The server will now handle all cooldown logic.
-
     if (!selectedSong) {
-      alert("Please select a song.");
+      handleOpenGenericModal("Please select a song.", true);
       return;
     }
 
     if (!newUsername.trim()) {
-      alert("Please enter a username.");
+      handleOpenGenericModal("Please enter a username.", true);
       return;
     }
 
     if (newUsername.length < 3 || newUsername.length > 15) {
-      alert("Username must be between 3 and 15 characters long.");
+      handleOpenGenericModal(
+        "Username must be between 3 and 15 characters long.",
+        true
+      );
       return;
     }
 
     const validUsernameRegex = /^[a-zA-Z0-9._+-]+$/;
     if (!validUsernameRegex.test(newUsername)) {
-      alert(
-        "Username can only contain letters, numbers, periods (.), underscores (_), plus signs (+), and hyphens (-)."
+      handleOpenGenericModal(
+        "Username can only contain letters, numbers, periods (.), underscores (_), plus signs (+), and hyphens (-).",
+        true
       );
       return;
     }
@@ -107,44 +109,39 @@ function Tile({
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          selectedSong: selectedSong,
+          selectedSong,
           username: newUsername,
-          rowNum: rowNum,
-          colNum: colNum,
         }),
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-
-        if (response.status === 429 && errorData.error) {
-          const match = errorData.error.match(
-            /approximately (\d+) more minutes/
+        // Here's the key change:
+        // Use the numerical timeRemaining value from the server response
+        if (response.status === 429) {
+          onCooldownTriggered(errorData.timeRemaining);
+          const minutesLeft = Math.ceil(errorData.timeRemaining / 60);
+          handleOpenGenericModal(
+            `You must wait approximately ${minutesLeft} more minutes before editing again.`,
+            true
           );
-          const minutesLeft = match ? parseInt(match[1], 10) : 0;
-          if (minutesLeft > 0) {
-            onCooldownTriggered(minutesLeft * 60);
-            const alertModal = document.createElement("div");
-            alertModal.className = "modal-alert";
-            alertModal.innerHTML = `<p>You must wait approximately ${minutesLeft} more minutes before editing again.</p>`;
-            document.body.appendChild(alertModal);
-            setTimeout(() => document.body.removeChild(alertModal), 5000);
-          }
-          return;
+        } else {
+          // Handle all other errors
+          handleOpenGenericModal(
+            errorData.error || `Failed to update tile: ${response.status}`,
+            true
+          );
         }
-        throw new Error(
-          errorData.error || `Failed to update tile: ${response.status}`
-        );
+        return;
       }
 
-      const result = await response.json();
-      console.log("Tile update successful:", result);
-
+      // If the response is successful, trigger the parent's update and close modal
       onUpdateSuccess();
       handleCloseEditModal();
+      handleOpenGenericModal("Tile updated successfully!", false);
     } catch (error) {
       console.error("Error saving tile edit:", error);
-      alert(`Error saving tile: ${error.message}`);
+      handleOpenGenericModal(`Error saving tile: ${error.message}`, true);
     }
   };
 
