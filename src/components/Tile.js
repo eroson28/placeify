@@ -430,20 +430,6 @@ function Tile({
                 }}
               >
                 <button
-                  onClick={handleSaveEdit}
-                  style={{
-                    padding: "10px 20px",
-                    borderRadius: "25px",
-                    border: "none",
-                    backgroundColor: "#4CAF50",
-                    color: "white",
-                    cursor: "pointer",
-                    flexGrow: 1,
-                  }}
-                >
-                  Send
-                </button>
-                <button
                   onClick={handleCloseEditModal}
                   style={{
                     padding: "10px 20px",
@@ -456,6 +442,20 @@ function Tile({
                   }}
                 >
                   Cancel
+                </button>
+                <button
+                  onClick={handleSaveEdit}
+                  style={{
+                    padding: "10px 20px",
+                    borderRadius: "25px",
+                    border: "none",
+                    backgroundColor: "#4CAF50",
+                    color: "white",
+                    cursor: "pointer",
+                    flexGrow: 1,
+                  }}
+                >
+                  Send
                 </button>
               </div>
             </div>
