@@ -29,6 +29,51 @@ redisClient.on("error", (err) => console.log("Redis Client Error", err));
 })();
 
 app.locals.globalLastEditTimestamp = null;
+
+async function getSpotifyAccessToken() {
+  const CLIENT_ID = process.env.CLIENT_ID;
+  const CLIENT_SECRET = process.env.CLIENT_SECRET;
+
+  if (!CLIENT_ID || !CLIENT_SECRET) {
+    console.error(
+      "Spotify CLIENT_ID or CLIENT_SECRET not found in environment variables."
+    );
+    return null;
+  }
+
+  try {
+    const credentials = Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString(
+      "base64"
+    );
+    const tokenResponse = await fetch(
+      "https://accounts.spotify.com/api/token",
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          Authorization: `Basic ${credentials}`,
+        },
+        body: "grant_type=client_credentials",
+        method: "POST",
+      }
+    );
+
+    if (!tokenResponse.ok) {
+      const errorText = await tokenResponse.text();
+      throw new Error(
+        `Failed to get Spotify token: ${tokenResponse.status} - ${errorText}`
+      );
+    }
+
+    const tokenData = await tokenResponse.json();
+    const accessToken = tokenData.access_token;
+    console.log("Spotify Access Token obtained.");
+    return accessToken;
+  } catch (error) {
+    console.error("Error fetching Spotify access token:", error);
+    return null;
+  }
+}
+
 app.get("/api/allTiles", async function (req, res) {
   try {
     const spotifyAccessToken = app.locals.spotifyAccessToken;
@@ -311,6 +356,12 @@ async function initializeServer() {
     );
 
     app.locals.spotifyAccessToken = spotifyAccessToken;
+    
+    // EVERY 58 MIN GET NEW SPOTIFYACCESSTOKEN
+    setInterval(async () => {
+      console.log("Refreshing Spotify access token...");
+      app.locals.spotifyAccessToken = await getSpotifyAccessToken();
+    }, 3480 * 1000);
 
     const editCooldownMinutes = parseInt(
       process.env.EDIT_COOLDOWN_MINUTES || "0",
