@@ -133,8 +133,8 @@
 }
 
 .modal-content-custom img {
-  width: 200px;
-  /* Increased width */
+  /*width: 200px;
+   Increased width */
   height: 200px;
   /* Increased height */
   object-fit: cover;
