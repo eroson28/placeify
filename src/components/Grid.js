@@ -79,8 +79,30 @@ function Grid() {
     }
   };
 
+  // Function to fetch the user's cooldown status
+  const fetchCooldownStatus = async () => {
+    try {
+      const response = await fetch("/api/user-cooldown");
+      if (response.ok) {
+        const { cooldownSeconds } = await response.json();
+        setCooldownRemaining(cooldownSeconds);
+      } else {
+        setCooldownRemaining(0);
+      }
+    } catch (e) {
+      console.error("Failed to fetch cooldown status:", e);
+      setCooldownRemaining(0);
+    }
+  };
+
+  const handleUpdateAttemptComplete = () => {
+    fetchGridData();
+    fetchCooldownStatus();
+  };
+
   useEffect(() => {
     fetchGridData();
+    fetchCooldownStatus();
   }, []);
 
   useEffect(() => {
@@ -92,10 +114,6 @@ function Grid() {
     }
   }, [cooldownRemaining]);
 
-  const handleCooldown = (seconds) => {
-    setCooldownRemaining(seconds);
-  };
-
   const formatTime = (seconds) => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
@@ -103,25 +121,6 @@ function Grid() {
       remainingSeconds
     ).padStart(2, "0")}`;
   };
-
-  // Initial cooldown fetch
-  useEffect(() => {
-    const fetchInitialCooldown = async () => {
-      try {
-        const response = await fetch("/api/user-cooldown");
-        if (response.ok) {
-          const { cooldownSeconds } = await response.json();
-          setCooldownRemaining(cooldownSeconds);
-        } else {
-          setCooldownRemaining(0);
-        }
-      } catch (e) {
-        console.error("Failed to fetch initial cooldown status:", e);
-        setCooldownRemaining(0);
-      }
-    };
-    fetchInitialCooldown();
-  }, []);
 
   if (isLoading) {
     return (
@@ -178,23 +177,13 @@ function Grid() {
           return (
             <Tile
               key={`${cellData.rowNum}-${cellData.colNum}`}
-              rowNum={cellData.rowNum}
-              colNum={cellData.colNum}
-              songName={cellData.songName}
-              artistName={cellData.artistName}
-              coverArtUrl={cellData.coverArtUrl}
-              isSelected={cellData.isSelected}
-              username={cellData.username}
-              lastUpdated={cellData.lastUpdated}
-              spotifyLink={cellData.link}
-              albumName={cellData.albumName}
-              onUpdateSuccess={fetchGridData}
+              {...cellData}
+              onUpdateAttemptComplete={handleUpdateAttemptComplete}
               onCellClick={() =>
                 console.log(
                   `Cell clicked: (${cellData.rowNum}, ${cellData.colNum})`
                 )
               }
-              onCooldownTriggered={handleCooldown}
             />
           );
         })}

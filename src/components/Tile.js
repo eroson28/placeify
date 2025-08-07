@@ -145,6 +145,8 @@ function Tile({
     } catch (error) {
       console.error("Error saving tile edit:", error);
       alert(`Error saving tile: ${error.message}`);
+    } finally {
+      onUpdateAttemptComplete();
     }
   };
 
