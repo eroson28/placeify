@@ -12,15 +12,14 @@
   align-items: center;
   padding: 20px;
 }
-
 .grid-container {
   display: grid;
   grid-template-columns: repeat(20, 1fr);
   padding: 10px;
   gap: 1px;
-  margin: "20px auto";
-  border-radius: "8px";
-  box-shadow: "0 4px 8px rgba(0, 0, 0, 0.1)";
+  margin: 20px auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 
   /* Adjust padding for larger screens (e.g., tablets and desktops) */
   @media (min-width: 768px) {
@@ -138,7 +137,7 @@
 
 .modal-content-custom img {
   /*width: 200px;
-   Increased width */
+      Increased width */
   height: 200px;
   /* Increased height */
   object-fit: cover;
@@ -163,19 +162,19 @@
 
 /* The Play on Spotify Button */
 .spotify_button {
-  display: "inline-flex";
-  justify-content: "center";
-  align-items: "center";
-  margin-top: "15px";
-  padding: "8px 15px";
-  background-color: "#1DB954";
-  border-radius: "25px";
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 15px;
+  padding: 8px 15px;
+  background-color: #1DB954;
+  border-radius: 25px;
 }
 
-.spotify-button img {
-  height: "30px";
-  border-radius: "0px";
-  box-shadow: "none";
+.spotify_button img {
+  height: 30px;
+  border-radius: 0;
+  box-shadow: none;
 }
 
 .timer-display {
@@ -184,26 +183,26 @@
 
 /* The Edit Button */
 .edit-button {
-  display: "block";
-  width: "100%";
-  max-width: "150px";
-  margin: "20px auto 0 auto";
-  padding: "10px 15px";
-  background-color: "#457b9d";
-  color: "white";
-  border: "none";
-  border-radius: "25px";
-  cursor: "pointer";
-  font-size: "1em";
-  font-weight: "bold";
+  display: block;
+  width: 100%;
+  max-width: 150px;
+  margin: 20px auto 0 auto;
+  padding: 10px 15px;
+  background-color: #457b9d;
+  color: white;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: 1em;
+  font-weight: bold;
 }
 
 /* COUNTDOWN TIMER STYLE */
 
 .cooldown-timer-display {
-  text-align: "center";
-  margin: "10px 0";
-  font-size: "1.2em";
-  font-weight: "bold";
-  color: "#f1eff8ff";
+  text-align: center;
+  margin: 10px 0;
+  font-size: 1.2em;
+  font-weight: bold;
+  color: #f1eff8ff;
 }
