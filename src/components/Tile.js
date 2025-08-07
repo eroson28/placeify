@@ -218,8 +218,8 @@ function Tile({
                   <strong>Last Updated:</strong> {formattedLastUpdated}
                 </p>
                 {spotifyLink && (
-                  <a
-                    href={spotifyLink}
+                  <a href={spotifyLink}>
+                  <button
                     target="_blank"
                     rel="noopener noreferrer"
                     style={{
@@ -229,17 +229,16 @@ function Tile({
                       marginTop: "15px",
                       padding: "8px 15px",
                       backgroundColor: "#1DB954",
-                      color: "white",
-                      textDecoration: "none",
                       borderRadius: "25px",
-                      fontWeight: "bold",
+                      width: "100px",
                     }}
                   >
                     <img
                       src={"/Spotify_Full_Logo_Black_CMYK.svg"}
                       alt="Listen on Spotify"
-                      style={{ height: "20px" }}
+                      style={{ height: "30px" }}
                     />
+                  </button>
                   </a>
                 )}
                 <button
