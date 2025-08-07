@@ -27,6 +27,22 @@ function Grid() {
   const [error, setError] = useState(null);
   const [cooldownRemaining, setCooldownRemaining] = useState(0);
 
+  // Function to fetch the current cooldown time from the server
+  const fetchCooldownTime = async () => {
+    try {
+      const response = await fetch("/api/cooldown-time");
+      if (response.ok) {
+        const { timeRemaining } = await response.json();
+        setCooldownRemaining(timeRemaining);
+      } else {
+        setCooldownRemaining(0);
+      }
+    } catch (e) {
+      console.error("Failed to fetch cooldown status:", e);
+      setCooldownRemaining(0);
+    }
+  };
+
   const fetchGridData = async () => {
     try {
       setIsLoading(true);
@@ -79,36 +95,26 @@ function Grid() {
     }
   };
 
-  // Function to fetch the user's cooldown status
-  const fetchCooldownStatus = async () => {
-    try {
-      const response = await fetch("/api/user-cooldown");
-      if (response.ok) {
-        const { cooldownSeconds } = await response.json();
-        setCooldownRemaining(cooldownSeconds);
-      } else {
-        setCooldownRemaining(0);
-      }
-    } catch (e) {
-      console.error("Failed to fetch cooldown status:", e);
-      setCooldownRemaining(0);
-    }
+  // This function will be called on a successful tile update
+  const handleUpdateSuccess = () => {
+    fetchGridData();
+    fetchCooldownTime();
   };
 
-  const handleUpdateAttemptComplete = () => {
-    fetchGridData();
-    fetchCooldownStatus();
+  // This function is still called on a 429 error, which is correct
+  const handleCooldown = (seconds) => {
+    setCooldownRemaining(seconds);
   };
 
   useEffect(() => {
     fetchGridData();
-    fetchCooldownStatus();
+    fetchCooldownTime(); // Initial fetch of cooldown on component mount
   }, []);
 
   useEffect(() => {
     if (cooldownRemaining > 0) {
       const timer = setInterval(() => {
-        setCooldownRemaining((prevTime) => prevTime - 1);
+        setCooldownRemaining((prevTime) => (prevTime > 0 ? prevTime - 1 : 0));
       }, 1000);
       return () => clearInterval(timer);
     }
@@ -177,15 +183,23 @@ function Grid() {
           return (
             <Tile
               key={`${cellData.rowNum}-${cellData.colNum}`}
-              {...cellData}
-              onUpdateAttemptComplete={handleUpdateAttemptComplete}
-              onUpdateSuccess={handleUpdateAttemptComplete}
-              onCooldownTriggered={setCooldownRemaining}
+              rowNum={cellData.rowNum}
+              colNum={cellData.colNum}
+              songName={cellData.songName}
+              artistName={cellData.artistName}
+              coverArtUrl={cellData.coverArtUrl}
+              isSelected={cellData.isSelected}
+              username={cellData.username}
+              lastUpdated={cellData.lastUpdated}
+              spotifyLink={cellData.link}
+              albumName={cellData.albumName}
+              onUpdateSuccess={handleUpdateSuccess}
               onCellClick={() =>
                 console.log(
                   `Cell clicked: (${cellData.rowNum}, ${cellData.colNum})`
                 )
               }
+              onCooldownTriggered={handleCooldown}
             />
           );
         })}
