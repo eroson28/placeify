@@ -86,7 +86,7 @@ function Grid() {
   useEffect(() => {
     if (cooldownRemaining > 0) {
       const timer = setInterval(() => {
-        setCooldownRemaining(prevTime => prevTime - 1);
+        setCooldownRemaining((prevTime) => prevTime - 1);
       }, 1000);
       return () => clearInterval(timer);
     }
@@ -99,14 +99,16 @@ function Grid() {
   const formatTime = (seconds) => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
-    return `${String(minutes).padStart(2, "0")}:${String(remainingSeconds).padStart(2, "0")}`;
+    return `${String(minutes).padStart(2, "0")}:${String(
+      remainingSeconds
+    ).padStart(2, "0")}`;
   };
 
   // Initial cooldown fetch
   useEffect(() => {
     const fetchInitialCooldown = async () => {
       try {
-        const response = await fetch('/api/user-cooldown');
+        const response = await fetch("/api/user-cooldown");
         if (response.ok) {
           const { cooldownSeconds } = await response.json();
           setCooldownRemaining(cooldownSeconds);
@@ -114,7 +116,7 @@ function Grid() {
           setCooldownRemaining(0);
         }
       } catch (e) {
-        console.error('Failed to fetch initial cooldown status:', e);
+        console.error("Failed to fetch initial cooldown status:", e);
         setCooldownRemaining(0);
       }
     };
@@ -146,7 +148,16 @@ function Grid() {
   return (
     <div className="app-container">
       {cooldownRemaining > 0 && (
-        <div className="cooldown-timer-display" style={{ textAlign: 'center', margin: '10px 0', fontSize: '1.2em', fontWeight: 'bold', color: '#f1eff8ff' }}>
+        <div
+          className="cooldown-timer-display"
+          style={{
+            textAlign: "center",
+            margin: "10px 0",
+            fontSize: "1.2em",
+            fontWeight: "bold",
+            color: "#f1eff8ff",
+          }}
+        >
           {formatTime(cooldownRemaining)}
         </div>
       )}

@@ -197,11 +197,9 @@ app.put("/api/tiles/:rowNum/:colNum", async function (req, res) {
     if (onCooldown) {
       const timeLeftSeconds = await redisClient.ttl(cooldownKey);
       const minutesLeft = Math.ceil(timeLeftSeconds / 60);
-      return res
-        .status(429)
-        .json({
-          error: `You must wait approximately ${minutesLeft} more minutes.`,
-        });
+      return res.status(429).json({
+        error: `You must wait approximately ${minutesLeft} more minutes.`,
+      });
     }
 
     if (!selectedSong || !selectedSong.id || !newUsername) {
@@ -211,7 +209,8 @@ app.put("/api/tiles/:rowNum/:colNum", async function (req, res) {
     const validUsernameRegex = /^[a-zA-Z0-9._+-]+$/;
     if (!validUsernameRegex.test(newUsername)) {
       return res.status(400).json({
-        error: "Username can only contain letters, numbers, periods (.), underscores (_), plus signs (+), and hyphens (-).",
+        error:
+          "Username can only contain letters, numbers, periods (.), underscores (_), plus signs (+), and hyphens (-).",
       });
     }
 
@@ -240,21 +239,25 @@ app.put("/api/tiles/:rowNum/:colNum", async function (req, res) {
 });
 
 app.get("/api/cooldown-time", async function (req, res) {
-    try {
-        const clientIp = (req.headers['x-forwarded-for'] || req.socket.remoteAddress).split(',')[0].trim();
-        const cooldownKey = `cooldown:${clientIp}`;
+  try {
+    const clientIp = (
+      req.headers["x-forwarded-for"] || req.socket.remoteAddress
+    )
+      .split(",")[0]
+      .trim();
+    const cooldownKey = `cooldown:${clientIp}`;
 
-        const timeLeftSeconds = await redisClient.ttl(cooldownKey);
+    const timeLeftSeconds = await redisClient.ttl(cooldownKey);
 
-        // Redis TTL returns -2 if await redisClient.setEx(cooldownKey, cooldownPeriodSeconds, "on");the key doesn't exist, -1 if it exists but has no expiration,
-        // and a positive number for the seconds remaining. Treat -2 as 0.
-        const timeRemaining = timeLeftSeconds > 0 ? timeLeftSeconds : 0;
+    // Redis TTL returns -2 if await redisClient.setEx(cooldownKey, cooldownPeriodSeconds, "on");the key doesn't exist, -1 if it exists but has no expiration,
+    // and a positive number for the seconds remaining. Treat -2 as 0.
+    const timeRemaining = timeLeftSeconds > 0 ? timeLeftSeconds : 0;
 
-        res.json({ timeRemaining: timeRemaining });
-    } catch (error) {
-        console.error("Error fetching cooldown time:", error);
-        res.status(500).json({ error: "Failed to retrieve cooldown time." });
-    }
+    res.json({ timeRemaining: timeRemaining });
+  } catch (error) {
+    console.error("Error fetching cooldown time:", error);
+    res.status(500).json({ error: "Failed to retrieve cooldown time." });
+  }
 });
 
 app.get("/about", (req, res) => {
