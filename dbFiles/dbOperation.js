@@ -3,6 +3,11 @@ const { Pool } = require('pg');
 
 const pool = new Pool(config);
 
+pool.on('error', (err, client) => {
+    console.error('Database connection pool error:', err);
+    // You can remove the process.exit(1) if you prefer not to crash the app on error
+});
+
 const getTileInfo = async (rowNum, colNum) => {
     try {
         const client = await pool.connect();
