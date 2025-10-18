@@ -1,6 +1,22 @@
 import { useState, useEffect } from "react";
 import Tile from "./Tile";
 
+const mapDatabaseKeys = (dbTile) => {
+    if (!dbTile) return null;
+    return {
+        rowNum: dbTile.rownum,
+        colNum: dbTile.colnum,
+        songName: dbTile.songname || null,
+        artistName: dbTile.artistname || null,
+        coverArtUrl: dbTile.coverarturl || null,
+        isSelected: false,
+        username: dbTile.username || null,
+        lastUpdated: dbTile.lastupdated,
+        spotifyLink: dbTile.link || null,
+        albumName: dbTile.albumname || null,
+    };
+};
+
 function Grid() {
   const [gridData, setGridData] = useState(() => {
     const initialGrid = [];
@@ -73,7 +89,8 @@ function Grid() {
 
       const fetchedTilesMap = new Map();
       fetchedData.forEach((tile) => {
-        fetchedTilesMap.set(`${tile.rowNum}-${tile.colNum}`, tile);
+        const mappedTile = mapDatabaseKeys(tile);
+        fetchedTilesMap.set(`${mappedTile.rowNum}-${mappedTile.colNum}`, mappedTile);
       });
 
       const updatedGrid = [];
