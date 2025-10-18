@@ -67,17 +67,12 @@ async function getSpotifyAccessToken() {
   }
 }
 
-app.get("/about", (req, res) => {
-  res.sendFile(path.join(__dirname, "build", "about.html"), (err) => {
-    if (err) {
-      console.error("Error serving about.html:", err);
-      res.status(500).send("Error loading About page.");
-    }
-  });
-});
-
 // USE BUILD DIRECTORY FOR STATIC FILES
 app.use(express.static(path.join(__dirname, "build")));
+
+app.get("/about", (req, res) => {
+  res.sendFile(path.join(__dirname, "build", "about.html"));
+});
 
 app.get("/api/allTiles", async function (req, res) {
   try {
