@@ -1,0 +1,44 @@
+/* FOR ABOUT PAGE */
+body {
+  font-family: "Roboto", Arial, sans-serif;
+  background-color: #f5f3ed
+}
+
+a {
+  color: #000000;
+  text-decoration: none;
+}
+
+#about-content {
+  padding-left: 5em;
+  padding-right: 5em;
+  padding-top: 3em;
+  min-height: 100vh;
+}
+
+@media only screen and (max-width: 600px) {
+  #about-content {
+    padding-left: 1em;
+    padding-right: 1em;
+    padding-top: 2em;
+    justify-content: right;
+  }
+}
+
+#about-content h1 {
+  text-decoration: underline solid #ebab34;
+}
+
+#about-content h2 {
+  text-decoration: wavy;
+}
+
+#about-content p {
+  font-size: 18px;
+  line-height: 1.6;
+}
+
+#about-content p a {
+  color: #a97b25;
+  text-decoration: underline #a97b25;
+}
