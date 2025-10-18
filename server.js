@@ -24,10 +24,6 @@ const redisClient = redis.createClient({
 redisClient.on("connect", () => console.log("Connected to Redis!"));
 redisClient.on("error", (err) => console.log("Redis Client Error", err));
 
-(async () => {
-  await redisClient.connect();
-})();
-
 app.locals.globalLastEditTimestamp = null;
 
 async function getSpotifyAccessToken() {
@@ -325,6 +321,9 @@ async function initializeServer() {
       );
       process.exit(1);
     }
+
+    await redisClient.connect(); 
+    console.log("Redis client successfully initialized and connected.");
 
     const credentials = Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString(
       "base64"
