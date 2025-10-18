@@ -12,9 +12,6 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// USE BUILD DIRECTORY FOR STATIC FILES
-app.use(express.static(path.join(__dirname, "build")));
-
 const redis = require("redis");
 
 const redisClient = redis.createClient({
@@ -69,6 +66,18 @@ async function getSpotifyAccessToken() {
     return null;
   }
 }
+
+app.get("/about", (req, res) => {
+  res.sendFile(path.join(__dirname, "build", "about.html"), (err) => {
+    if (err) {
+      console.error("Error serving about.html:", err);
+      res.status(500).send("Error loading About page.");
+    }
+  });
+});
+
+// USE BUILD DIRECTORY FOR STATIC FILES
+app.use(express.static(path.join(__dirname, "build")));
 
 app.get("/api/allTiles", async function (req, res) {
   try {
@@ -304,15 +313,6 @@ app.get("/api/cooldown-time", async function (req, res) {
     console.error("Error fetching cooldown time:", error);
     res.status(500).json({ error: "Failed to retrieve cooldown time." });
   }
-});
-
-app.get("/about", (req, res) => {
-  res.sendFile(path.join(__dirname, "build", "about.html"), (err) => {
-    if (err) {
-      console.error("Error serving about.html:", err);
-      res.status(500).send("Error loading About page.");
-    }
-  });
 });
 
 app.get("*", (req, res) => {
