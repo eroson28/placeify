@@ -314,6 +314,15 @@ app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "build", "index.html"));
 });
 
+app.get("/about", (req, res) => {
+  res.sendFile(path.join(__dirname, "build", "about.html"), (err) => {
+    if (err) {
+      console.error("Error serving about.html:", err);
+      res.status(500).send("Error loading About page.");
+    }
+  });
+});
+
 async function initializeServer() {
   try {
     const CLIENT_ID = process.env.CLIENT_ID;
