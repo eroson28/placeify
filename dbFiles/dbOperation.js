@@ -33,7 +33,7 @@ const getAllTilesFromDB = async () => {
     }
 };
 
-const updateTile = async ({ rowNum, colNum, link, username, lastUpdated }) => {
+const updateTile = async ({ rownum, colnum, link, username, lastupdated }) => {
     try {
         const client = await pool.connect();
         const query = `
@@ -45,7 +45,7 @@ const updateTile = async ({ rowNum, colNum, link, username, lastUpdated }) => {
             WHERE
                 rownum = $4 AND colnum = $5;
         `;
-        const values = [link, username, lastUpdated, rowNum, colNum];
+        const values = [link, username, lastupdated, rownum, colnum];
         const result = await client.query(query, values);
         client.release();
         return result.rowCount;
