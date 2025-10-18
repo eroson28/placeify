@@ -183,6 +183,7 @@ function Grid() {
                 )
               }
               onCooldownTriggered={handleCooldown}
+              handleOpenGenericModal={handleOpenGenericModal}
             />
           );
         })}
