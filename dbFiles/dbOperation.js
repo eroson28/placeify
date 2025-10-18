@@ -11,7 +11,7 @@ pool.on('error', (err, client) => {
 const getTileInfo = async (rowNum, colNum) => {
     try {
         const client = await pool.connect();
-        const query = 'SELECT * FROM grid WHERE "rownum" = $1 AND "colnum" = $2';
+        const query = 'SELECT * FROM grid WHERE rownum = $1 AND colnum = $2';
         const result = await client.query(query, [rowNum, colNum]);
         client.release();
         return result.rows;

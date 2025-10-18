@@ -262,11 +262,11 @@ app.put("/api/tiles/:rowNum/:colNum", async function (req, res) {
     const lastUpdated = new Date().toISOString();
 
     const updateResult = await dbOperation.updateTile({
-      rowNum: rowNum,
-      colNum: colNum,
+      rownum: rowNum,
+      colnum: colNum,
       link: spotifyLink,
       username: newUsername,
-      lastUpdated: lastUpdated,
+      lastupdated: lastUpdated,
     });
 
     await redisClient.setEx(cooldownKey, cooldownPeriodSeconds, "on");
