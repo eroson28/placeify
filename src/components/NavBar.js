@@ -19,7 +19,7 @@ function NavBar() {
             <Nav.Link href="https://github.com/eroson28/placeify">
               github
             </Nav.Link>
-            <Nav.Link href="/about">about</Nav.Link>
+            <Nav.Link href="/about.html">about</Nav.Link>
           </Nav>
         </Navbar.Collapse>
       </Container>

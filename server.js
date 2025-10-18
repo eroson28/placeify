@@ -70,10 +70,6 @@ async function getSpotifyAccessToken() {
 // USE BUILD DIRECTORY FOR STATIC FILES
 app.use(express.static(path.join(__dirname, "build")));
 
-app.get("/about", (req, res) => {
-  res.sendFile(path.join(__dirname, "build", "about.html"));
-});
-
 app.get("/api/allTiles", async function (req, res) {
   try {
     const spotifyAccessToken = app.locals.spotifyAccessToken;
