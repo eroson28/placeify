@@ -316,6 +316,7 @@ app.get("/api/cooldown-time", async function (req, res) {
 });
 
 app.get("*", (req, res) => {
+  if (req.path === "/about") return;
   res.sendFile(path.join(__dirname, "build", "index.html"));
 });
 
