@@ -307,14 +307,6 @@ app.get("/api/cooldown-time", async function (req, res) {
 });
 
 app.get("/about", (req, res) => {
-  res.sendFile(path.join(__dirname, "build", "about.html"));
-});
-
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "build", "index.html"));
-});
-
-app.get("/about", (req, res) => {
   res.sendFile(path.join(__dirname, "build", "about.html"), (err) => {
     if (err) {
       console.error("Error serving about.html:", err);
@@ -322,6 +314,12 @@ app.get("/about", (req, res) => {
     }
   });
 });
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "build", "index.html"));
+});
+
+
 
 async function initializeServer() {
   try {
