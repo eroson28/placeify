@@ -26,6 +26,19 @@ function Grid() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [cooldownRemaining, setCooldownRemaining] = useState(0);
+  const [genericModal, setGenericModal] = useState({
+        isOpen: false,
+        message: "",
+        isError: false,
+    });
+
+    const handleOpenGenericModal = (message, isError = false) => {
+        setGenericModal({
+            isOpen: true,
+            message,
+            isError,
+        });
+    };
 
   // Function to fetch the current cooldown time from the server
   const fetchCooldownTime = async () => {
