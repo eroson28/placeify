@@ -11,7 +11,7 @@ pool.on('error', (err, client) => {
 const getTileInfo = async (rowNum, colNum) => {
     try {
         const client = await pool.connect();
-        const query = 'SELECT * FROM grid WHERE "rowNum" = $1 AND "colNum" = $2';
+        const query = 'SELECT * FROM grid WHERE "rownum" = $1 AND "colnum" = $2';
         const result = await client.query(query, [rowNum, colNum]);
         client.release();
         return result.rows;
@@ -41,9 +41,9 @@ const updateTile = async ({ rowNum, colNum, link, username, lastUpdated }) => {
             SET
                 link = $1,
                 username = $2,
-                "lastUpdated" = $3
+                lastupdated = $3
             WHERE
-                "rowNum" = $4 AND "colNum" = $5;
+                rownum = $4 AND colnum = $5;
         `;
         const values = [link, username, lastUpdated, rowNum, colNum];
         const result = await client.query(query, values);
