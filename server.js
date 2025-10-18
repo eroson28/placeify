@@ -141,7 +141,11 @@ app.get("/api/allTiles", async function (req, res) {
       }
 
       return {
-        ...dbTile,
+        rowNum: dbTile.rownum,
+        colNum: dbTile.colnum,
+        link: dbTile.link,
+        username: dbTile.username,
+        lastUpdated: dbTile.lastupdated,
         songName: matchingSpotifyTrack ? matchingSpotifyTrack.name : null,
         artistName: matchingSpotifyTrack
           ? matchingSpotifyTrack.artists.map((a) => a.name).join(", ")
